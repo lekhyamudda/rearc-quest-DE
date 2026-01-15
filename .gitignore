@@ -1,5 +1,39 @@
+# Node / CDK
 node_modules/
 cdk.out/
-*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / temp
 .DS_Store
-.tmp/
+tmp/
+*.log
+
+# CDK generated JS/typings if you want TS-only repo
+bin/*.js
+bin/*.d.ts
+lib/*.js
+lib/*.d.ts
+test/*.js
+test/*.d.ts
+
+# Accidental files created by terminal paste
+=2.0.0
+'=2.0.0'
+Affected
+If
+More
+Overview:
+opt-out.
+collecting
+information
+telemetry
+version
+-bash:
+^C
+logs*
+"logs get-log-events \\"
+rearc-quest-cdk
+npx
