@@ -49,7 +49,7 @@ The pipeline is built in four parts:
   Defines and deploys all infrastructure
 
 ---
-
+```text
 ## Repository Structure
 ├── bin/ # CDK app entry point
 ├── lib/ # CDK stack definitions
@@ -66,7 +66,7 @@ The pipeline is built in four parts:
 ├── package.json
 └── tsconfig.json
 
-
+```
 ---
 
 ## How to Deploy and Run
