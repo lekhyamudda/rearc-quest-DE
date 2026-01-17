@@ -1,153 +1,189 @@
-# Rearc Data Quest – AWS Data Pipeline - Lekhya Submission
+# Rearc Data Quest – AWS Data Pipeline  
+**Submission by Lekhya**
 
-This repository contains my solution for the **Rearc Data Quest**, implementing an end-to-end data pipeline using AWS services and Infrastructure as Code.
+This repository contains my submission for the **Rearc Data Quest**.  
+The goal of this project is to build a simple but complete **AWS-based data pipeline** that demonstrates data ingestion, storage, analytics, and automation.
 
-The project demonstrates data ingestion, storage, analytics, and automation using **AWS CDK, Lambda, S3, SQS, and Pandas**.
+The solution uses **AWS Lambda, S3, SQS, CloudWatch, SageMaker, and AWS CDK (TypeScript)**.
 
 ---
 
-## High-Level Overview
+## Overview
 
-The pipeline is built in four parts:
+This pipeline:
 
-1. **Part 1 – Data Sourcing (BLS → S3)**  
-   Republish Bureau of Labor Statistics (BLS) time-series data into Amazon S3 while complying with BLS access policies.
+- Republishes BLS time-series data into Amazon S3  
+- Fetches US population data from a public API  
+- Performs analytics using Pandas  
+- Automates execution using AWS CDK, Lambda scheduling, and SQS triggers  
 
-2. **Part 2 – API Integration (Population API → S3)**  
-   Fetch US population data from a public API and store the response as JSON in S3.
+---
 
-3. **Part 3 – Data Analytics**  
-   Perform analytics using Pandas to generate required reports:
-   - Mean & standard deviation of US population (2013–2018)
-   - Best year per `series_id` based on summed quarterly values
-   - Join time-series data with population data for a specific series and period
+## Quest Parts Breakdown
 
-4. **Part 4 – Automation & Infrastructure (AWS CDK)**  
-   Automate the pipeline using AWS CDK:
-   - Scheduled ingestion Lambda
-   - S3 → SQS notification
-   - Report Lambda triggered by SQS messages
+### Part 1 – AWS S3 & Data Sourcing
+
+- Republished Bureau of Labor Statistics (BLS) datasets into Amazon S3
+- Programmatic access follows BLS policy using a User-Agent header
+- Prevents duplicate uploads of unchanged files
+
+**S3 Output**
+```
+s3://rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95ri/bls/pr/pr.data.0.Current
+```
+
+---
+
+### Part 2 – API Integration
+
+- Fetches US population data from a public API
+- Stores the response as JSON in Amazon S3
+
+**S3 Output**
+```
+s3://rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95ri/bls/api/population.json
+```
+
+---
+
+### Part 3 – Data Analytics
+
+Analytics were implemented using **Pandas** and validated in **Amazon SageMaker**.
+
+Reports generated:
+
+- Mean and standard deviation of US population (2013–2018)
+- Best year per `series_id` based on summed quarterly values
+- Joined report for:
+  - `series_id = PRS30006032`
+  - `period = Q01`
+  - Population for the same year
+
+The full analysis and results are available here:
+
+```
+submission/notebooks/analysis.ipynb
+```
+
+---
+
+### Part 4 – Automation & Infrastructure (AWS CDK)
+
+Infrastructure is fully automated using **AWS CDK (TypeScript)**.
+
+Includes:
+
+- Ingest Lambda (Part 1 & 2)
+- S3 → SQS notification
+- Report Lambda triggered by SQS
+- CloudWatch logging
+- Daily scheduled execution
 
 ---
 
 ## Architecture Summary
 
-- **Amazon S3**  
-  Stores republished BLS datasets and population API output
-
+- **Amazon S3** – Stores datasets and API outputs  
 - **AWS Lambda**
-  - Ingest Lambda: runs Part 1 and Part 2
-  - Report Lambda: runs Part 3 analytics and logs results
-    
-- **Amazon SageMaker**
-   - Part 3  Data Analysis and reports
-     
-- **Amazon SQS**  
-  Receives messages when population data is written to S3
-
-- **AWS CDK (TypeScript)**  
-  Defines and deploys all infrastructure
+  - Ingest Lambda (Part 1 & 2)
+  - Report Lambda (Part 3 analytics)
+- **Amazon SQS** – Triggers analytics when new data arrives
+- **Amazon SageMaker** – Interactive analysis
+- **AWS CDK** – Infrastructure as Code
 
 ---
-```text
+
 ## Repository Structure
-├── bin/ # CDK app entry point
-├── lib/ # CDK stack definitions
+
+```
+├── bin/                     # CDK app entry point
+├── lib/                     # CDK stack definitions
 ├── lambda/
-│ ├── ingest/ # Lambda for Part 1 & Part 2
-│ └── reports/ # Lambda for Part 3 analytics
+│   ├── ingest/              # Part 1 & 2 Lambda
+│   └── reports/             # Part 3 analytics Lambda
 ├── submission/
-│ ├── notebooks/
-│ │ └── analysis.ipynb # Part 3 analysis notebook
-│ ├── outputs/ #saved outputs and logs
-| ├── screenshots/
-│   ├── AWS_S3Bucket.png
-│   ├── CloudWatchReportLogs.png
-│   └── ReportLambda.png
-│ 
+│   ├── notebooks/
+│   │   └── analysis.ipynb
+│   ├── outputs/
+│   ├── screenshots/
+│   │   ├── AWS_S3Bucket.png
+│   │   ├── CloudWatchReportLogs.png
+│   │   ├── SQS_Queue.png
+│   │   └── ReportLambda.png
 ├── README.md
 ├── cdk.json
 ├── package.json
 └── tsconfig.json
-
 ```
+
 ---
 
-## How to Deploy and Run
+## Deployment
 
 ### Prerequisites
 
-- AWS account with permissions for:
-  - S3, Lambda, SQS, IAM, CloudFormation, EventBridge
-- Node.js and npm
-- AWS CDK v2
+- AWS account
 - AWS CLI configured
-
----
+- Node.js & npm
+- AWS CDK v2
 
 ### Install Dependencies
 
+```bash
 npm install
+```
 
------------
-Deploy
+### Deploy Infrastructure
+
+```bash
 npx cdk deploy
---------------
-After deployment, the stack outputs:
+```
 
-S3 bucket name: rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95r
+### Stack Outputs
 
-SQS queue URL: https://sqs.us-east-1.amazonaws.com/509010658370/RearcQuestCdkStack-PopulationQueue6729BE7E-vp1WIifjNrMX
+- **S3 Bucket**
+```
+rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95ri
+```
 
-Verify Data in S3
-aws s3 ls s3://<BUCKET_NAME>/bls/ --recursive
+- **SQS Queue URL**
+```
+https://sqs.us-east-1.amazonaws.com/509010658370/RearcQuestCdkStack-PopulationQueue6729BE7E-vp1WIifjNrMX
+```
 
-## Trigger Report Lambda
+---
+
+## Verification
+
+### Verify S3 Data
+
+```bash
+aws s3 ls s3://rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95ri/bls/ --recursive
+```
+
+### Trigger Report Lambda
+
+```bash
 aws lambda invoke \
-  --function-name "<ReportLambdaName>" \
-  --payload '{}' \
-  /tmp/report_out.json
+  --function-name "RearcQuestCdkStack-ReportLambda9FE277D8-dSK0xpM9rlrl" \
+  --payload '{}' /tmp/report_out.json
 
 cat /tmp/report_out.json
+```
 
-------------
-## View Analytics Output
-aws logs tail "/aws/lambda/<ReportLambdaName>" --since 30m
---------------------------
+### View Logs
 
-## Part 3 – Data Analytics Details
+```bash
+aws logs tail "/aws/lambda/RearcQuestCdkStack-ReportLambda9FE277D8-dSK0xpM9rlrl" --since 30m
+```
 
-- The notebook submission/notebooks/analysis.ipynb contains:
-
-- Data loading and cleaning
-
-- Population statistics (mean & standard deviation for 2013–2018)
-
-- Best year per series_id based on summed quarterly values
-
-- Joined report for series_id = PRS30006032 and period = Q01
-
-- The same logic is reused in the Report Lambda for automated execution.
-
-## Part 4 – Automation with AWS CDK
-- Infrastructure is defined using AWS CDK (TypeScript)
-- Includes:
-  - Lambda for ingestion (Part 1 & 2)
-  - S3 notification → SQS
-  - Lambda triggered by SQS to run analytics (Part 3)
-  - Scheduled daily execution
+---
 
 ## Notes
 
-- Analytics results are logged to CloudWatch Logs
+- Analytics output is logged to CloudWatch
+- Infrastructure is fully automated via AWS CDK
+- AI tools were used as a learning/reference aid; all logic is understood and explainable
 
-- S3 bucket and SQS queue are created via CDK
-
-- Lambda functions are fully automated
-
-- AI tools were used as a reference and learning aid; all logic is understood and explainable
-
-
-
-
+---
 
