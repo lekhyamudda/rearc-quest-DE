@@ -60,6 +60,10 @@ The pipeline is built in four parts:
 │ ├── notebooks/
 │ │ └── analysis.ipynb # Part 3 analysis notebook
 │ ├── outputs/ #saved outputs and logs
+| ├── screenshots/
+│   ├── AWS_S3Bucket.png
+│   ├── CloudWatchReportLogs.png
+│   └── ReportLambda.png
 │ 
 ├── README.md
 ├── cdk.json
