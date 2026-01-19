@@ -156,7 +156,7 @@ p2 - Population S3:
 https://rearc-bls-republish-2026.s3.us-east-1.amazonaws.com/bls/api/population.json
 
 ```
-- **SQS Queue URL**
+- **SQS Queue Endpoint**
 ```
 https://sqs.us-east-1.amazonaws.com/509010658370/RearcQuestCdkStack-PopulationQueue6729BE7E-vp1WIifjNrMX
 ```
