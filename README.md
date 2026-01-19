@@ -146,6 +146,16 @@ npx cdk deploy
 rearcquestcdkstack-questbucket7af4fe29-mz5fzkoo95ri
 ```
 
+- **S3 Bucket URL**
+
+```
+p1- BLS dataset S3:
+https://rearc-bls-republish-2026.s3.us-east-1.amazonaws.com/bls/pr/pr.data.0.Current
+
+p2 - Population S3:
+https://rearc-bls-republish-2026.s3.us-east-1.amazonaws.com/bls/api/population.json
+
+```
 - **SQS Queue URL**
 ```
 https://sqs.us-east-1.amazonaws.com/509010658370/RearcQuestCdkStack-PopulationQueue6729BE7E-vp1WIifjNrMX
